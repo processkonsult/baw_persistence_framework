@@ -1,0 +1,43 @@
+Outstanding issues:
+-Cannot have two attributes which are lists of the same type
+
+Email from me to Stephen and Courtney 8/13/2023:
+Subject: MCK Persistence Framework Limitation
+
+Hey Team-
+
+I just wanted to let you know that I was testing something this morning and noticed that there is one limitation that the MCK persistence framework cannot handle:
+
+If a complex object has two attributes which are both lists of the same nested complex type, the framework currently has no way to differentiate between the lists so the all elements would be loaded into both lists.
+
+Here’s would be an example that would not work:
+
+1)	Consider a process app that contains two custom complex objects, one called Request and one called Address.
+2)	The Request object has two attributes which are both lists: Request.oldAddresses[] and Request.newAddresses[]
+3)	Here is a sample Request object:
+
+{
+oldAddresses: [
+          {street: “123 Main St.”, city: “Anytown”, state: “AA”},
+          {street: “456 Test Dr.”, city: “Somewhere”, state: “ZZ”}
+],
+newAddresses: [
+          {street: “555 Mid Rd.”, city: “There”, state: “MM”},
+]
+}
+4)	When the following object is saved, all three child Address records will have a RequestId column in their database record linking it to the same Request.
+5)	Therefore, when the Request is loaded, it will look like this:
+{
+oldAddresses: [
+          {street: “123 Main St.”, city: “Anytown”, state: “AA”},
+          {street: “456 Test Dr.”, city: “Somewhere”, state: “ZZ”},
+          {street: “555 Mid Rd.”, city: “There”, state: “MM”}
+],
+newAddresses: [
+          {street: “123 Main St.”, city: “Anytown”, state: “AA”},
+          {street: “456 Test Dr.”, city: “Somewhere”, state: “ZZ”},
+          {street: “555 Mid Rd.”, city: “There”, state: “MM”}
+]
+}
+
+I’m going to consider this scenario over the course of the week and see if there is a straightforward solution based on how the framework functions.  If not, this may just be a limitation when using it.  But I wanted to bring this to your attention in case your use case and/or object model for the iSeries project contains this “multiple attributes that are lists of the same complex type” scenario.
