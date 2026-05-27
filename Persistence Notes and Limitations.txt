@@ -10,7 +10,7 @@ I just wanted to let you know that I was testing something this morning and noti
 
 If a complex object has two attributes which are both lists of the same nested complex type, the framework currently has no way to differentiate between the lists so the all elements would be loaded into both lists.
 
-Here’s would be an example that would not work:
+Here’s an example that would not work:
 
 1)	Consider a process app that contains two custom complex objects, one called Request and one called Address.
 2)	The Request object has two attributes which are both lists: Request.oldAddresses[] and Request.newAddresses[]
@@ -41,3 +41,14 @@ newAddresses: [
 }
 
 I’m going to consider this scenario over the course of the week and see if there is a straightforward solution based on how the framework functions.  If not, this may just be a limitation when using it.  But I wanted to bring this to your attention in case your use case and/or object model for the iSeries project contains this “multiple attributes that are lists of the same complex type” scenario.
+
+
+20251005 - AI Performance Improvement Attempts
+It's known that when processing large lists of objects (i.e. >500-1000 or so), marshalling them into TWObjects can be slow. For this reason, it is recommended to:
+
+1) When possible, ensure that the result set size is less than 500
+2) When not possible (such as with Search services), it is probably best to write a custom retrieval service using the BAW System Data toolkit's "SQL Execute Statement" which accepts a "returnType" argument and therefore can directly return the results in a list of TWObjects. Performance testing has shown that this approach works much better than leveraging the standard persistence framework to retrieve large result sets.
+
+20251121 Enhancement list:
+-Optimistic locking
+-Populate nested IDs after Save operation (just assign in order they were generated from sequence)
